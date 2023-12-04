@@ -1,6 +1,7 @@
 import numpy as np
 from collections import deque
 from enum import Enum
+from pprint import pprint
 
 
 class GridIndex(Enum):
@@ -29,7 +30,7 @@ def create_map(original_map: str) -> list[list[int]]:
     n_cols = len(replaced) // n_rows
 
     # Convert the list to a NumPy array and reshape
-    grid = np.array(replaced, dtype=np.int64).reshape(n_rows, n_cols)
+    grid = np.array(replaced, dtype=np.int8).reshape(n_rows, n_cols)
 
     sensor_indicies = np.argwhere(grid == GridIndex.SENSOR.value)
 
@@ -40,8 +41,7 @@ def create_map(original_map: str) -> list[list[int]]:
         # print(new.astype(np.int8))
         base_map = np.bitwise_and(base_map,  bfs_map(sensor, grid)) # places that need to be searched in BOTH maps (prev and new)
     
-    print(base_map.astype(np.int8))
-
+    return base_map.astype(np.int8).tolist()
 
 def bfs_map(start: tuple[int, int], grid: np.ndarray) -> np.ndarray:
     """
@@ -104,11 +104,14 @@ def bfs_map(start: tuple[int, int], grid: np.ndarray) -> np.ndarray:
                 continue
             queue.append((n_row, n_col))
 
-    return np.ones_like(grid)
+    return np.ones_like(grid) # base base - all need searching
 
 
 def manhattan(p1: tuple[int, int], p2: tuple[int, int]):
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
+if __name__ == "__main__":
+    file_input = open("2023_12_input.txt", "r").read()
+    result = create_map(file_input)
 
-create_map(open("2023_12_input.txt", "r").read())
+    print(np.array(result)) # nparray print is better lol
