@@ -74,22 +74,20 @@ def bfs_map(start: tuple[int, int], grid: np.ndarray) -> np.ndarray:
             # we found the tag. for every value that is equal to this distance from
             # start, set it to 0. This is to finish the circle around the start
             base = np.ones_like(grid, dtype=np.bool_)
-            t = manhattan((row, col), start) + 1 # lol apparently this does it bc "distance in inclusive idk"
-            # print(f"tag [{row} {col}] ({t})")
+            t = manhattan((row, col), start)
 
             for scan_row in range(
                 max(0, s_row - t), 
                 min(s_row + t + 1, grid.shape[0])
             ):
-                span = (t - abs(s_row - scan_row)) # distance from center column to each side of the row discovered on each side
-                # print(" ", end="")
+                # distance from center column to each side of the row discovered on each side
+                span = (t - abs(s_row - scan_row))
+
                 for c in range(
                     max(0, s_col - span), 
                     min(s_col + span + 1, grid.shape[1])
                 ):
-                    # print(c, end=" ")
                     base[scan_row, c] = 0
-                # print()
             return base
 
         for n_row, n_col in (
