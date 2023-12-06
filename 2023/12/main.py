@@ -111,7 +111,7 @@ def manhattan(p1: tuple[int, int], p2: tuple[int, int]):
     return abs(p1[0] - p2[0]) + abs(p1[1] - p2[1])
 
 if __name__ == "__main__":
-    file_input = open("2023_12_input.txt", "r").read()
+    file_input = open("inputs/1.txt", "r").read()
     result = create_map(file_input)
 
-    print(np.array(result)) # nparray print is better
+    print(np.array(result))
