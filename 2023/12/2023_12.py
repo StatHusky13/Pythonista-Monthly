@@ -1,7 +1,12 @@
-import numpy as np
+
+# for arrays which hold the main and intermediate grids
+import numpy as np 
+
+# for BFS search queueing
 from collections import deque
+
+# enums for readability
 from enum import Enum
-from pprint import pprint
 
 
 class GridIndex(Enum):
@@ -18,18 +23,15 @@ char_lookup: dict[str, int] = {
 
 
 def create_map(original_map: str) -> list[list[int]]:
-    # approach:
-    # get the indicies of each tag
-    # for each sensor, calculate the taxicab distance to the nearest tag
-    # then, redraw the map, if a square is within the radius of a sensor,
-    # make it 1. if it isn't, make it 0.
+    # for a detailed approach explanation, see 
+    # 2023_21_readme.md
 
     replaced = [char_lookup[char] for char in original_map.strip() if char != "\n"]
 
     n_rows = original_map.count("\n") + 1
     n_cols = len(replaced) // n_rows
 
-    # Convert the list to a NumPy array and reshape
+    # Convert the list to an array and reshape
     grid = np.array(replaced, dtype=np.int8).reshape(n_rows, n_cols)
 
     sensor_indicies = np.argwhere(grid == GridIndex.SENSOR.value)
@@ -112,4 +114,4 @@ if __name__ == "__main__":
     file_input = open("2023_12_input.txt", "r").read()
     result = create_map(file_input)
 
-    print(np.array(result)) # nparray print is better lol
+    print(np.array(result)) # nparray print is better
