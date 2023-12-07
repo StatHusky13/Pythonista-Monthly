@@ -1,32 +1,34 @@
 import numpy as np
 import pandas as pd
 import random
-from main import CellType, create_map, get_coverage, char_lookup
+from main import CellType, get_coverage
 import time
 
 
 def test():
-    n_tests = 1000
+    n_tests = int(1e3)
     test_num = 0
 
-    bin_step = 10 ** 5
-    bins = list(range(1, 1000**2, bin_step)) # n cells
-    bins.append(float("inf"))
-    data = [] # runtime
+    bin_step: int = int(10e3 / 4)
+    n_bins = 6
+    m_dim = int((bin_step * n_bins) ** 0.5)
+    bins = list(range(1, bin_step * n_bins, bin_step)) # n cells
     
-    time_avg: float = 0
+
+    bins.append(float("inf"))
+    data = []
+    
     while test_num <= n_tests:
-        shape = (random.randint(1, 10*3), random.randint(1, 10**3))
+        shape = (random.randint(1, m_dim), random.randint(1, m_dim))
         n_sensors, n_tags = (
-            random.randint(0, shape [0] // 2),
-            random.randint(0, shape[1] // 2),
+            random.randint(0, shape [0] // 10),
+            random.randint(0, shape[1] // 10),
         )
         grid = distribute_cells(shape, n_sensors, n_tags)
 
         start = time.time()
 
         try:
-            print(grid.shape)
             get_coverage(grid)
         except Exception as e:
             print(
@@ -34,10 +36,9 @@ def test():
             )
             raise e
 
-        time_avg = (time_avg * test_num + (time.time() - start)) / (test_num + 1)
         data.append({
             "Runtime [ms]": (time.time()-start) * 1000, 
-            "N_Cells": shape[0]*shape[1]
+            "N": shape[0]*shape[1]
         })
         test_num += 1
 
@@ -45,8 +46,9 @@ def test():
             print(f"{test_num} / {n_tests}")
     
     df = pd.DataFrame(data)
-    df["Cell_Group"] = pd.cut(df["N_Cells"], bins=bins, labels=[f"{k} to {k+bin_step}" for k in bins[:-1]])
-    grouped_df = df.groupby("Cell_Group", observed=True)['Runtime [ms]'].mean().reset_index()
+    df["N_Cells"] = pd.cut(df["N"], bins=bins, labels=[f"{k} to {k+bin_step}" for k in bins[:-1]])
+    grouped_df = df.groupby("N_Cells", observed=True).agg({"Runtime [ms]": "mean", "N": "size"}).reset_index()
+    grouped_df.rename(columns={'N': 'N_Bin'}, inplace=True)
     print(grouped_df)
 
 
