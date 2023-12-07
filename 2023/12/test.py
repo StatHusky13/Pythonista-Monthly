@@ -45,19 +45,28 @@ def test():
 
         if test_num % 100 == 0:
             print(f"{test_num} / {n_tests}")
-    
+            
+    analyze_data(data, bins, bin_step)
+
+def analyze_data(data, bins, bin_step):
     df = pd.DataFrame(data)
     df["N_Cells"] = pd.cut(df["N"], bins=bins, labels=[f"{k} to {k+bin_step}" for k in bins[:-1]])
-    grouped_df = df.groupby("N_Cells", observed=True).agg({"Runtime [ms]": "mean", "N": "size"}).reset_index()
+    grouped_df = df.groupby(
+        "N_Cells", observed=True
+    ).agg({
+        "Runtime [ms]": "mean", 
+        "N": "size"
+    }).reset_index()
     grouped_df.rename(columns={'N': 'N_Bin'}, inplace=True)
 
     print(grouped_df)
-    print(bins[:-1], list(grouped_df["Runtime [ms]"]))
     model = np.poly1d(np.polyfit(bins[:-1], list(grouped_df["Runtime [ms]"]), 2))
     plt.scatter(bins[:-1], grouped_df["Runtime [ms]"])
 
     polyline = np.linspace(0, bin_step*n_bins, 10)
     plt.plot(polyline, model(polyline))
+    plt.xlabel(f"N_Cells [Binned: {bin_size}]")
+    plt.ylabel(f"Average Runtime [ms]")
     plt.show()
 
 

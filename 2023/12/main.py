@@ -31,7 +31,7 @@ def create_map(original_map: str) -> list[list[int]]:
 
 
 def parse_map(map: str) -> np.ndarray:
-    n_rows: int = map.count("\n") + 1
+    n_rows: int = map.count("\n") + 1 
     replaced = [char_lookup[char] for char in map.strip() if char != "\n"]
     n_cols: int = len(replaced) // n_rows
 
@@ -107,6 +107,3 @@ if __name__ == "__main__":
     result = create_map(file_input)
 
     print(np.array(result))
-
-
-# 9 16
