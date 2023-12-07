@@ -1,16 +1,17 @@
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import random
 from main import CellType, get_coverage
 import time
 
 
 def test():
-    n_tests = int(1e3)
+    n_tests = int(1e4)
     test_num = 0
 
     bin_step: int = int(10e3 / 4)
-    n_bins = 6
+    n_bins = 10
     m_dim = int((bin_step * n_bins) ** 0.5)
     bins = list(range(1, bin_step * n_bins, bin_step)) # n cells
     
@@ -49,7 +50,15 @@ def test():
     df["N_Cells"] = pd.cut(df["N"], bins=bins, labels=[f"{k} to {k+bin_step}" for k in bins[:-1]])
     grouped_df = df.groupby("N_Cells", observed=True).agg({"Runtime [ms]": "mean", "N": "size"}).reset_index()
     grouped_df.rename(columns={'N': 'N_Bin'}, inplace=True)
+
     print(grouped_df)
+    print(bins[:-1], list(grouped_df["Runtime [ms]"]))
+    model = np.poly1d(np.polyfit(bins[:-1], list(grouped_df["Runtime [ms]"]), 2))
+    plt.scatter(bins[:-1], grouped_df["Runtime [ms]"])
+
+    polyline = np.linspace(0, bin_step*n_bins, 10)
+    plt.plot(polyline, model(polyline))
+    plt.show()
 
 
 def distribute_cells(shape: tuple[int, int], n_sensors: int, n_tags: int):

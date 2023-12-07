@@ -81,7 +81,6 @@ def bfs_map(start: tuple[int, int], grid: np.ndarray) -> np.ndarray:
                 ):
                     base[scan_row, c] = 0
             return base
-        # print((row, col))
 
         for n_row, n_col in (
             (row + 1, col),
